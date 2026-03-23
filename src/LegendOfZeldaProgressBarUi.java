@@ -1,4 +1,5 @@
 import com.intellij.openapi.ui.GraphicsConfig;
+import com.intellij.ui.JBColor;
 import com.intellij.util.ui.GraphicsUtil;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
@@ -18,7 +19,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
-    private static final float ONE_OVER_SEVEN = 1f / 7;
 
     // frames per paint-tick before advancing to the next animation frame
     private static final int ANIM_SPEED = 6;
@@ -55,11 +55,11 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
 
     /**
      * Returns all animation frames for the given selected path.
-     *
+     * <p>
      * Naming convention — frames must follow one of these patterns:
      *   /infinit/nut_0.png, /infinit/nut_1.png, ...   (underscore + index)
      *   /infinit/nut0.png,  /infinit/nut1.png,  ...   (digit suffix)
-     *
+     * <p>
      * If no siblings are found, returns a single-element array with the icon itself.
      * Mirrored variants (prefixed with "r") are excluded — they are resolved at paint time.
      */
@@ -121,17 +121,6 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
         });
     }
 
-    /** Returns the mirrored variant of a frame path (prepends "r" to the filename). */
-    private String toMirroredFramePath(String path) {
-        if (path == null) return null;
-        int lastSlash = path.lastIndexOf('/');
-        if (lastSlash < 0) return path;
-        String folder   = path.substring(0, lastSlash + 1);
-        String filename = path.substring(lastSlash + 1);
-        if (filename.toLowerCase().startsWith("r")) return path; // already mirrored
-        return folder + "r" + filename;
-    }
-
     /** Resolves mirrored frames, falling back to forward frames if none exist. */
     private static Icon[] resolveMirroredFrames(String basePath) {
         int lastSlash = basePath.lastIndexOf('/');
@@ -148,8 +137,7 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
 
     @Override
     protected void paintIndeterminate(Graphics g2d, JComponent c) {
-        if (!(g2d instanceof Graphics2D)) return;
-        Graphics2D g = (Graphics2D) g2d;
+        if (!(g2d instanceof Graphics2D g)) return;
 
         Insets b = progressBar.getInsets();
         int barRectWidth  = progressBar.getWidth()  - (b.right + b.left);
@@ -161,12 +149,12 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
 
         int w = c.getWidth();
         int h = c.getPreferredSize().height;
-        if (!isEven(c.getHeight() - h)) h++;
+        if (isOdd(c.getHeight() - h)) h++;
 
         final GraphicsConfig config = GraphicsUtil.setupAAPainting(g);
         g.translate(0, (c.getHeight() - h) / 2);
 
-        final float R = JBUI.scale(8f);
+        final float R = (float)JBUI.scale(8);
 
         // Advance movement
         offset = (offset + 1) % getPeriodLength();
@@ -199,7 +187,7 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
             if (frames.length > 0) {
                 int frameIndex = (animTick / ANIM_SPEED) % frames.length;
                 Icon frame = frames[frameIndex];
-                paintIconAtCenter(g, frame, trackX, trackY, trackW, trackH, offset2, velocity < 0);
+                paintIconAtCenter(g, frame, trackX, trackY, trackW, trackH, offset2);
             } else {
                 // No frames found — fall back to character
                 paintCharacterIcon(g, character, trackX, trackY, trackW, trackH, offset2, velocity < 0);
@@ -230,17 +218,16 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
 
     @Override
     protected void paintDeterminate(Graphics g, JComponent c) {
-        if (!(g instanceof Graphics2D)) return;
+        if (!(g instanceof Graphics2D g2)) return;
 
         if (progressBar.getOrientation() != SwingConstants.HORIZONTAL || !c.getComponentOrientation().isLeftToRight()) {
             super.paintDeterminate(g, c);
             return;
         }
-        final GraphicsConfig config = GraphicsUtil.setupAAPainting(g);
         Insets b = progressBar.getInsets();
         int w = progressBar.getWidth();
         int h = progressBar.getPreferredSize().height;
-        if (!isEven(c.getHeight() - h)) h++;
+        if (isOdd(c.getHeight() - h)) h++;
 
         int barRectWidth  = w - (b.right + b.left);
         int barRectHeight = h - (b.top   + b.bottom);
@@ -253,17 +240,16 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
         Color background = parent != null ? parent.getBackground() : UIUtil.getPanelBackground();
 
         g.setColor(background);
-        Graphics2D g2 = (Graphics2D) g;
         if (c.isOpaque()) g.fillRect(0, 0, w, h);
 
-        final float R   = JBUI.scale(8f);
-        final float R2  = JBUI.scale(9f);
-        final float off = JBUI.scale(1f);
+        final float R   = (float)JBUI.scale(8);
+        final float R2  = (float)JBUI.scale(9);
+        final float off = (float)JBUI.scale(1);
 
-        Color progressColor = brighten(character.getBackgroundStart(), 1.35f);
+        Color progressColor = brighten(character.getBackgroundStart());
         g2.setColor(progressColor);
 
-        float filledWidth = Math.max(0, amountFull - JBUI.scale(5f));
+        float filledWidth = Math.max(0, amountFull - (float)JBUI.scale(5));
         int trackX = Math.round(2f * off);
         int trackY = Math.round(2f * off);
         int trackW = Math.max(1, w - trackX * 2);
@@ -289,7 +275,7 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
                     b.left, b.top, barRectWidth, barRectHeight);
             Shape oldClip = g2.getClip();
             g2.setClip(new Rectangle2D.Float(off, off, amountFull - off, h));
-            g2.setColor(Color.white);
+            g2.setColor(JBColor.WHITE);
             BasicGraphicsUtils.drawString(progressBar, g2, progressString,
                     renderLocation.x, renderLocation.y);
             g2.setClip(new Rectangle2D.Float(amountFull, 0, w - amountFull, h));
@@ -342,7 +328,7 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
         if (icon != null) {
             paintIconScaled(g2, icon, iconX, iconY, iconWidth, iconHeight, sourceIconWidth, sourceIconHeight);
         } else {
-            paintFallbackGlyph(g2, character, iconX, iconY, iconWidth, iconHeight);
+            paintFallbackGlyph(g2, iconX, iconY, iconWidth, iconHeight);
         }
         g2.setClip(oldClip);
     }
@@ -351,7 +337,7 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
                                    Icon icon,
                                    int trackX, int trackY,
                                    int trackWidth, int trackHeight,
-                                   int centerX, boolean mirrored) {
+                                   int centerX) {
         if (icon == null) return;
 
         int sourceIconWidth  = icon.getIconWidth();
@@ -403,7 +389,7 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
         }
     }
 
-    private void paintFallbackGlyph(Graphics2D g2, LegendCharacter character, int x, int y, int width, int height) {
+    private void paintFallbackGlyph(Graphics2D g2, int x, int y, int width, int height) {
         Polygon glyph = new Polygon();
         glyph.addPoint(x + width / 2, y);
         glyph.addPoint(x + width,     y + height / 2);
@@ -418,33 +404,19 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
         return LegendSettingsState.getInstance().getSelectedCharacter();
     }
 
-    private static LinearGradientPaint createVerticalGradient(Color start, Color end, int height) {
-        float[] fractions = new float[]{0f, ONE_OVER_SEVEN, 1f};
-        Color mid = new Color(
-                (start.getRed()   + end.getRed())   / 2,
-                (start.getGreen() + end.getGreen()) / 2,
-                (start.getBlue()  + end.getBlue())  / 2);
-        return new LinearGradientPaint(0, JBUI.scale(2), 0, Math.max(1, height - JBUI.scale(6)),
-                fractions, new Color[]{start, mid, end});
+    private static Color brighten(Color color) {
+        return new JBColor(new Color(
+                Math.max(0, Math.min(255, Math.round(color.getRed() * (float) 1.35))),
+                Math.max(0, Math.min(255, Math.round(color.getGreen() * (float) 1.35))),
+                Math.max(0, Math.min(255, Math.round(color.getBlue() * (float) 1.35))),
+                color.getAlpha()), new Color(
+                Math.max(0, Math.min(255, Math.round(color.getRed() * (float) 1.35))),
+                Math.max(0, Math.min(255, Math.round(color.getGreen() * (float) 1.35))),
+                Math.max(0, Math.min(255, Math.round(color.getBlue() * (float) 1.35))),
+                color.getAlpha()));
     }
 
-    private static Color darken(Color color, float factor) {
-        return new Color(
-                Math.max(0, Math.min(255, Math.round(color.getRed()   * factor))),
-                Math.max(0, Math.min(255, Math.round(color.getGreen() * factor))),
-                Math.max(0, Math.min(255, Math.round(color.getBlue()  * factor))),
-                color.getAlpha());
-    }
-
-    private static Color brighten(Color color, float factor) {
-        return new Color(
-                Math.max(0, Math.min(255, Math.round(color.getRed()   * factor))),
-                Math.max(0, Math.min(255, Math.round(color.getGreen() * factor))),
-                Math.max(0, Math.min(255, Math.round(color.getBlue()  * factor))),
-                color.getAlpha());
-    }
-
-    private static boolean isEven(int value) {
-        return value % 2 == 0;
+    private static boolean isOdd(int value) {
+        return value % 2 != 0;
     }
 }

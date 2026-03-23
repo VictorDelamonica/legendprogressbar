@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.ImageIcon;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public final class LegendSettingsComponent {
             rb.setToolTipText(character.getDisplayName());
             rb.setAlignmentY(Component.CENTER_ALIGNMENT);
             characterGroup.add(rb);
-            characterGrid.add(buildTileRow(rb, scaled, character.getDisplayName(), charIconSize));
+            characterGrid.add(buildTileRow(rb, scaled, character.getDisplayName()));
             characterRadioButtons.add(rb);
         }
 
@@ -75,13 +76,13 @@ public final class LegendSettingsComponent {
 
         GridBagConstraints c = new GridBagConstraints();
         c.gridy = 0;
-        c.insets = new Insets(0, 0, 0, JBUI.scale(6));
+        c.insets = JBUI.insetsRight(JBUI.scale(6));
         c.anchor = GridBagConstraints.WEST;
         c.fill = GridBagConstraints.NONE;
         c.weightx = 0;
         header.add(label, c);
 
-        c.insets = new Insets(0, 0, 0, 0);
+        c.insets = JBUI.emptyInsets();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1.0;
         header.add(sep, c);
@@ -96,7 +97,7 @@ public final class LegendSettingsComponent {
         itemGroup = new ButtonGroup();
         int iconSize = JBUI.scale(24);
 
-        List<String> paths = listIconsInFolder("/infinit");
+        List<String> paths = listIconsInFolder();
 
         if (paths.isEmpty()) {
             container.add(new JLabel("No item icons found in /infinit"));
@@ -134,7 +135,7 @@ public final class LegendSettingsComponent {
             if (displayName.isEmpty()) displayName = nameNoExt;
 
             itemGroup.add(rb);
-            container.add(buildTileRow(rb, scaled, displayName, iconSize));
+            container.add(buildTileRow(rb, scaled, displayName));
             itemRadioButtons.add(rb);
         }
 
@@ -150,7 +151,7 @@ public final class LegendSettingsComponent {
 
     // ── Shared tile-row builder ────────────────────────────────────────────
 
-    private JPanel buildTileRow(JRadioButton rb, Icon icon, String displayName, int iconSize) {
+    private JPanel buildTileRow(JRadioButton rb, Icon icon, String displayName) {
         JPanel row = new JPanel();
         row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
         row.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -199,10 +200,10 @@ public final class LegendSettingsComponent {
 
     // ── Resource folder scanner ────────────────────────────────────────────
 
-    private List<String> listIconsInFolder(String folder) {
+    private List<String> listIconsInFolder() {
         List<String> results = new ArrayList<>();
         try {
-            java.net.URL url = LegendIcons.class.getResource(folder);
+            java.net.URL url = LegendIcons.class.getResource("/infinit");
             if (url == null) return results;
             String protocol = url.getProtocol();
 
@@ -213,15 +214,15 @@ public final class LegendSettingsComponent {
                      .map(p -> p.getFileName().toString())
                      .filter(n -> n.matches("(?i).+\\.(png|jpg|jpeg|gif|svg)"))
                      .filter(n -> !n.toLowerCase().startsWith("r"))
-                     .forEach(n -> results.add(folder + "/" + n));
+                     .forEach(n -> results.add("/infinit" + "/" + n));
                 }
             } else if ("jar".equals(protocol)) {
                 String path = url.getPath();
                 int idx = path.indexOf("!");
                 String jarPath = path.substring(5, idx);
-                String prefix = folder.replaceFirst("^/", "") + "/";
+                String prefix = "/infinit".replaceFirst("^/", "") + "/";
                 try (java.util.jar.JarFile jar = new java.util.jar.JarFile(
-                        java.net.URLDecoder.decode(jarPath, "UTF-8"))) {
+                        java.net.URLDecoder.decode(jarPath, StandardCharsets.UTF_8))) {
                     java.util.Enumeration<java.util.jar.JarEntry> entries = jar.entries();
                     while (entries.hasMoreElements()) {
                         java.util.jar.JarEntry e = entries.nextElement();
@@ -243,13 +244,6 @@ public final class LegendSettingsComponent {
     // ── Public API ─────────────────────────────────────────────────────────
 
     public JPanel getPanel() { return panel; }
-
-    public JComponent getPreferredFocusedComponent() {
-        for (JRadioButton rb : characterRadioButtons) {
-            if (rb.isSelected()) return rb;
-        }
-        return characterRadioButtons.isEmpty() ? panel : characterRadioButtons.get(0);
-    }
 
     // Character
 

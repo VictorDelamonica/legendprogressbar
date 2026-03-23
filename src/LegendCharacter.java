@@ -1,30 +1,58 @@
+import com.intellij.ui.JBColor;
+
 import java.awt.*;
 
 public enum LegendCharacter {
     LINK(
             "Link",
-            new Color(12, 48, 23),
+            new JBColor(new Color(12, 48, 23), new Color(12, 48, 23)),
             "/link.png",
             "/rlink.png"
     ),
     ZELDA(
             "Zelda",
-            new Color(39, 23, 85),
+            new JBColor(new Color(39, 23, 85), new Color(39, 23, 85)),
             "/zelda.png",
             "/rzelda.png"
     ),
     GANON(
             "Ganon",
-            new Color(2, 17, 46),
+            new JBColor(new Color(2, 17, 46), new Color(2, 17, 46)),
             "/ganon.png",
             "/rganon.png"
     ),
     GANONDORF(
             "Ganondorf",
-            new Color(47, 2, 2),
+            new JBColor(new Color(47, 2, 2), new Color(47, 2, 2)),
             "/ganondorf.png",
             "/rganondorf.png"
-    );
+    ),
+    SKULL_KID(
+            "Skull Kid",
+            new JBColor(new Color(150, 53, 32), new Color(150, 53, 32)), // Orange-brun, inspiré du masque
+            "/Skull Kid.png",
+            "/rskull_kid.png"
+    ),
+    //#rgb(148, 40, 42)
+    MASK_VENDOR(
+            "Mask Vendor",
+            new JBColor(new Color(99, 24, 44), new Color(99, 24, 44)),
+            "/Mask Vendor.png",
+            "/rmask_vendor.png"
+    ),
+    SHEIK(
+            "Sheik",
+            new JBColor(new Color(106, 119, 144), new Color(106, 119, 144)), // Bleu/gris, inspiré de la tenue
+            "/Sheik.png",
+            "/rsheik.png"
+    ),
+    NAVI(
+            "Navi",
+            new JBColor(new Color(135, 206, 250), new Color(135, 206, 250)), // Bleu clair, inspiré de la fée
+            "/Navi.png",
+            "/rnavi.png"
+    )
+    ;
 
     private final String displayName;
     private final Color backgroundStart;

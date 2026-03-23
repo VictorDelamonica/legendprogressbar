@@ -6,7 +6,6 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 @Service(Service.Level.APP)
 @State(name = "LegendSettingsState", storages = @Storage("LegendSettingsState.xml"))
@@ -52,8 +51,9 @@ public final class LegendSettingsState implements PersistentStateComponent<Legen
 
     // ── PersistentStateComponent ──────────────────────────────────────────
 
+    @NotNull
     @Override
-    public @Nullable LegendSettingsState getState() {
+    public LegendSettingsState getState() {
         return this;
     }
 

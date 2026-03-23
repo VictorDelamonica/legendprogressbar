@@ -1,0 +1,19 @@
+<idea-plugin>
+  <id>com.monikode.legendprogressbar</id>  <!-- unique, reverse-domain style -->
+  <name>Legend of Zelda Progress Bar</name>
+  <version>1.0.0</version>
+  <vendor email="victor.delamonica@epitech.eu" url="https://www.monikode.com">MoniK</vendor>
+
+  <description><![CDATA[
+    Replaces the IntelliJ progress bar with Legend of Zelda characters and items.
+  ]]></description>
+
+  <change-notes><![CDATA[
+    Initial release.
+  ]]></change-notes>
+
+  <!-- Minimum and maximum IDE build numbers -->
+  <idea-version since-build="223" until-build="243.*"/>
+
+  <depends>com.intellij.modules.platform</depends>
+</idea-plugin>

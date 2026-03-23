@@ -3,8 +3,8 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.13.1"  // note: different plugin ID in v2
 }
 
-group = "some.awesome"
-version = "1.0.0"
+group = "com.monikode"
+version = "1.1.0"
 
 java {
     toolchain {

@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.monikode.legendprogressbar</id>
   <name>Legend of Zelda Progress Bar</name>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <vendor email="victor.delamonica@epitech.eu" url="https://www.monikode.com">MoniKode</vendor>
 
   <description><![CDATA[

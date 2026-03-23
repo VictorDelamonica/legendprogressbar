@@ -1,19 +1,48 @@
 <idea-plugin>
-  <id>com.monikode.legendprogressbar</id>  <!-- unique, reverse-domain style -->
+  <id>com.monikode.legendprogressbar</id>
   <name>Legend of Zelda Progress Bar</name>
   <version>1.0.0</version>
-  <vendor email="victor.delamonica@epitech.eu" url="https://www.monikode.com">MoniK</vendor>
+  <vendor email="victor.delamonica@epitech.eu" url="https://www.monikode.com">MoniKode</vendor>
 
   <description><![CDATA[
-    Replaces the IntelliJ progress bar with Legend of Zelda characters and items.
-  ]]></description>
+        Replaces the IntelliJ progress bar with Legend of Zelda characters and animated items.
+    ]]></description>
 
   <change-notes><![CDATA[
-    Initial release.
-  ]]></change-notes>
+        Initial release.
+    ]]></change-notes>
 
-  <!-- Minimum and maximum IDE build numbers -->
   <idea-version since-build="223" until-build="243.*"/>
 
   <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+
+    <!-- Persists character + item selection across IDE restarts -->
+    <applicationService
+            serviceImplementation="LegendSettingsState"/>
+
+    <!-- Adds "Legend Progress Bar" entry under Settings → Appearance & Behavior -->
+    <applicationConfigurable
+            parentId="appearance"
+            instance="LegendSettingsConfigurable"
+            id="com.monikode.legendprogressbar.settings"
+            displayName="Legend Progress Bar"/>
+
+  </extensions>
+
+  <applicationListeners>
+
+    <!-- Re-applies the custom ProgressBarUI when the Look & Feel changes -->
+    <listener
+            class="LegendProgressBarInstaller"
+            topic="com.intellij.ide.ui.LafManagerListener"/>
+
+    <!-- Re-applies on IDE window activation (covers cold-start edge cases) -->
+    <listener
+            class="LegendProgressBarInstaller"
+            topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+
+  </applicationListeners>
+
 </idea-plugin>

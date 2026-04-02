@@ -45,12 +45,6 @@ public enum LegendCharacter {
             new JBColor(new Color(106, 119, 144), new Color(106, 119, 144)), // Bleu/gris, inspiré de la tenue
             "/Sheik.png",
             "/rsheik.png"
-    ),
-    NAVI(
-            "Navi",
-            new JBColor(new Color(135, 206, 250), new Color(135, 206, 250)), // Bleu clair, inspiré de la fée
-            "/Navi.png",
-            "/rnavi.png"
     )
     ;
 

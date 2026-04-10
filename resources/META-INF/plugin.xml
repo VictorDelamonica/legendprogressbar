@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.monikode.legendprogressbar</id>
   <name>Legend of Zelda Progress Bar</name>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <vendor email="victor.delamonica@epitech.eu" url="https://www.monikode.com">MoniKode</vendor>
 
   <description><![CDATA[
@@ -9,6 +9,13 @@
     ]]></description>
 
   <change-notes><![CDATA[
+        Version 2.1.0
+        ✨ 1 New Characters Item Added: Heart Container
+        🎨 Removed items miss animated
+        🐛 Bug fixes: resource scanning and icon-frame filtering improvements
+        ⚙️ Build: aligned plugin version across Gradle properties and build script
+
+        Version 2.0.0
         ✨ 3 New Characters Added: Skull Kid, Mask Vendor, and Sheik
         🎨 Enhanced dark/light theme compatibility
         🧹 Code cleanup and performance improvements

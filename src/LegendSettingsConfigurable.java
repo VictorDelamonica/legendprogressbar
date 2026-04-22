@@ -44,7 +44,9 @@ public final class LegendSettingsConfigurable implements Configurable {
         String savedItem = state.getSelectedItemPath();
         boolean itemChanged = uiItem == null ? savedItem != null : !uiItem.equals(savedItem);
 
-        return charChanged || itemChanged;
+        boolean audioChanged = settingsComponent.isAudioMuted() != state.audioMuted;
+
+        return charChanged || itemChanged || audioChanged;
     }
 
     @Override
@@ -53,6 +55,7 @@ public final class LegendSettingsConfigurable implements Configurable {
         LegendSettingsState state = LegendSettingsState.getInstance();
         state.setSelectedCharacter(settingsComponent.getSelectedCharacter());
         state.setSelectedItemPath(settingsComponent.getSelectedItemPath());
+        state.audioMuted = settingsComponent.isAudioMuted();
         LegendProgressBarInstaller.updateProgressBarUi();
     }
 
@@ -62,6 +65,7 @@ public final class LegendSettingsConfigurable implements Configurable {
         LegendSettingsState state = LegendSettingsState.getInstance();
         settingsComponent.setSelectedCharacter(state.getSelectedCharacter());
         settingsComponent.setSelectedItemPath(state.getSelectedItemPath());
+        settingsComponent.setAudioMuted(state.audioMuted);
     }
 
     @Override

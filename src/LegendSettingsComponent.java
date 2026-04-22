@@ -19,6 +19,10 @@ public final class LegendSettingsComponent {
     private ButtonGroup itemGroup;
     private final List<JRadioButton> itemRadioButtons = new ArrayList<>();
 
+    // --- Audio settings ---
+    private final JCheckBox audioMuteCheckbox = new JCheckBox("Mute build feedback audio");
+    private final JButton previewButton = new JButton("Preview animation");
+
     public LegendSettingsComponent() {
         // ── Section 1: Character grid ───────────────────────────────────────
         JPanel characterGrid = new JPanel(new GridLayout(0, 2, JBUI.scale(8), JBUI.scale(8)));
@@ -59,6 +63,12 @@ public final class LegendSettingsComponent {
         content.add(Box.createRigidArea(new Dimension(0, JBUI.scale(6))));
         content.add(itemsGrid);
 
+        content.add(Box.createRigidArea(new Dimension(0, JBUI.scale(14))));
+
+        content.add(buildSectionHeader("Audio"));
+        content.add(Box.createRigidArea(new Dimension(0, JBUI.scale(6))));
+        content.add(buildAudioPanel());
+
         panel = content;
     }
 
@@ -88,6 +98,46 @@ public final class LegendSettingsComponent {
         header.add(sep, c);
 
         return header;
+    }
+
+    // ── Audio panel ────────────────────────────────────────────────────────
+
+    private JPanel buildAudioPanel() {
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        audioMuteCheckbox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        container.add(audioMuteCheckbox);
+
+        container.add(Box.createRigidArea(new Dimension(0, JBUI.scale(8))));
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        previewButton.addActionListener(e -> onPreviewButtonClicked());
+        buttonPanel.add(previewButton);
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        container.add(buttonPanel);
+
+        return container;
+    }
+
+    private void onPreviewButtonClicked() {
+        LegendCharacter character = getSelectedCharacter();
+        if (character == null) {
+            return;
+        }
+
+        AnimationQueue queue = AnimationQueueHolder.getInstance().getQueue();
+        queue.enqueue(new SuccessAnimation(character));
+
+        // Play success audio if not muted
+        if (!audioMuteCheckbox.isSelected()) {
+            AudioManager audioManager = new AudioManager();
+            audioManager.play("/audio/success.wav");
+        }
     }
 
     // ── Items panel ────────────────────────────────────────────────────────
@@ -275,5 +325,15 @@ public final class LegendSettingsComponent {
             if (path.equals(rb.getActionCommand())) { rb.setSelected(true); return; }
         }
         if (!itemRadioButtons.isEmpty()) itemRadioButtons.get(0).setSelected(true);
+    }
+
+    // Audio
+
+    public boolean isAudioMuted() {
+        return audioMuteCheckbox.isSelected();
+    }
+
+    public void setAudioMuted(boolean muted) {
+        audioMuteCheckbox.setSelected(muted);
     }
 }

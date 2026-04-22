@@ -23,6 +23,9 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
     // frames per paint-tick before advancing to the next animation frame
     private static final int ANIM_SPEED = 6;
 
+    // milliseconds between animation frame updates (assuming ~60fps)
+    private static final int FRAME_DELTA_MS = 16;
+
     // cache: base path (e.g. "/infinit/nut_0.png") → ordered array of forward frames
     private static final Map<String, Icon[]> frameCache = new ConcurrentHashMap<>();
 
@@ -32,7 +35,8 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
     private volatile int animTick = 0;   // counts paint calls; drives frame index
 
     // Animation renderer for overlay animations
-    private AnimationRenderer animationRenderer;
+    private final AnimationRenderer animationRenderer = new AnimationRenderer(
+            AnimationQueueHolder.getInstance().getQueue());
 
     @SuppressWarnings({"MethodOverridesStaticMethodOfSuperclass", "UnusedDeclaration"})
     public static ComponentUI createUI(JComponent c) {
@@ -224,20 +228,13 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
     /**
      * Paint animation overlay on top of the progress bar.
      *
-     * Lazily initializes the animation renderer on first paint.
      * Updates the animation frame and renders it centered on the progress bar.
      */
     private void paintAnimationOverlay(Graphics2D g, JComponent c) {
-        if (animationRenderer == null) {
-            animationRenderer = new AnimationRenderer(
-                    AnimationQueueHolder.getInstance().getQueue());
-        }
-
-        // Update animation frame (assuming ~60fps with 16ms per frame)
-        animationRenderer.updateFrame(16);
+        // Update animation frame
+        animationRenderer.updateFrame(FRAME_DELTA_MS);
 
         // Paint animation overlay
-        Insets b = progressBar.getInsets();
         int trackX = JBUI.scale(2);
         int trackY = Math.max(0, (c.getHeight() - progressBar.getPreferredSize().height) / 2 + JBUI.scale(2));
         int trackW = Math.max(1, c.getWidth() - JBUI.scale(5));

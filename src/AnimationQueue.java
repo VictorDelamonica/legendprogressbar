@@ -62,7 +62,7 @@ public class AnimationQueue {
    *
    * If elapsed time reaches or exceeds duration, clears the animation and resets elapsed time.
    *
-   * @param deltaMs Milliseconds to advance. Clamped to prevent overflow.
+   * @param deltaMs Milliseconds to advance. Must be >= 0. Clamped to prevent overflow.
    */
   public synchronized void updateFrame(long deltaMs) {
     if (currentAnimation == null) {
@@ -70,8 +70,7 @@ public class AnimationQueue {
     }
 
     // Clamp deltaMs to prevent overflow
-    long safeElapseTime = Math.addExact(elapsedTimeMs, Math.min(deltaMs, Long.MAX_VALUE - elapsedTimeMs));
-    elapsedTimeMs = safeElapseTime;
+    elapsedTimeMs = elapsedTimeMs + Math.min(deltaMs, Long.MAX_VALUE - elapsedTimeMs);
 
     if (elapsedTimeMs >= currentAnimation.getDurationMs()) {
       currentAnimation = null;

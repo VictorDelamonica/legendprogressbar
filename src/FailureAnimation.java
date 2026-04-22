@@ -16,6 +16,12 @@ public class FailureAnimation implements Animation {
 
     private final Icon[] frames;
 
+    /**
+     * Create a failure animation for the given character.
+     *
+     * @param character the character to animate (must not be null)
+     * @throws IllegalStateException if no frames are available for the character
+     */
     public FailureAnimation(LegendCharacter character) {
         this.frames = loadFrames(character);
     }

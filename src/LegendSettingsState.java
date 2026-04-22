@@ -14,6 +14,7 @@ public final class LegendSettingsState implements PersistentStateComponent<Legen
     // Persisted fields — public so XmlSerializer can read/write them
     public String characterName = LegendCharacter.LINK.name();
     public String selectedItemPath = null;
+    public boolean audioMuted = false;
 
     public static LegendSettingsState getInstance() {
         Application application = ApplicationManager.getApplication();

@@ -25,11 +25,11 @@ public class SuccessAnimation implements Animation {
      *
      * Attempts to load frames from /infinit/{characterName}_win_0.png, _win_1.png, etc.
      * If winning poses are not available, falls back to the character's normal icon.
-     * If no frames can be loaded at all, returns a single-frame array with null
-     * (the animation system should handle null gracefully).
+     * Throws IllegalStateException if no frames can be loaded at all.
      *
      * @param character The character whose winning animation to load
      * @return Array of Icon frames in order
+     * @throws IllegalStateException if the character has no icon available
      */
     private Icon[] loadFrames(LegendCharacter character) {
         Objects.requireNonNull(character, "character must not be null");

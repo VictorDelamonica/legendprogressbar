@@ -1,9 +1,12 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.MockedStatic;
 
 import com.intellij.openapi.compiler.CompileContext;
@@ -13,6 +16,8 @@ import com.intellij.openapi.project.Project;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("BuildStateListener")
 class BuildStateListenerTest {
 
@@ -29,9 +34,7 @@ class BuildStateListenerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         listener = new BuildStateListener(mockAnimationQueue);
-        when(mockCompileContext.getProject()).thenReturn(mockProject);
     }
 
     @Test
@@ -92,6 +95,7 @@ class BuildStateListenerTest {
             mockedIcons.when(() -> LegendIcons.getIconByPath(anyString())).thenReturn(null);
             mockedIcons.when(() -> LegendIcons.getIcon(any(LegendCharacter.class), anyBoolean())).thenReturn(mockIcon);
 
+            when(mockCompileContext.getProject()).thenReturn(mockProject);
             AnimationQueue mockQueue = mock(AnimationQueue.class);
             BuildStateListener testListener = new BuildStateListener(mockQueue);
 
@@ -122,6 +126,7 @@ class BuildStateListenerTest {
             mockedIcons.when(() -> LegendIcons.getIconByPath(anyString())).thenReturn(null);
             mockedIcons.when(() -> LegendIcons.getIcon(any(LegendCharacter.class), anyBoolean())).thenReturn(mockIcon);
 
+            when(mockCompileContext.getProject()).thenReturn(mockProject);
             AnimationQueue mockQueue = mock(AnimationQueue.class);
             BuildStateListener testListener = new BuildStateListener(mockQueue);
 
@@ -152,6 +157,7 @@ class BuildStateListenerTest {
             mockedIcons.when(() -> LegendIcons.getIconByPath(anyString())).thenReturn(null);
             mockedIcons.when(() -> LegendIcons.getIcon(any(LegendCharacter.class), anyBoolean())).thenReturn(mockIcon);
 
+            when(mockCompileContext.getProject()).thenReturn(mockProject);
             AnimationQueue mockQueue = mock(AnimationQueue.class);
             BuildStateListener testListener = new BuildStateListener(mockQueue);
 

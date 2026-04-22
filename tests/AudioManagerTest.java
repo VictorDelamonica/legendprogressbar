@@ -33,6 +33,9 @@ class AudioManagerTest {
     @Test
     void play_skipsAudioWhenMuted() {
         audioManager.setMuted(true);
+        // Note: This test verifies no exception is thrown. Full behavioral verification
+        // (that audio was actually skipped) requires mock injection of the executor,
+        // which is not supported by the current design.
         assertThatNoException().isThrownBy(() -> audioManager.play("/audio/success.wav"));
     }
 
@@ -49,6 +52,17 @@ class AudioManagerTest {
     @Test
     void play_playsAudioWhenNotMuted() {
         audioManager.setMuted(false);
+        // Note: This test verifies no exception is thrown. Full behavioral verification
+        // (that audio was actually dispatched to the executor) requires mock injection
+        // of the executor, which is not supported by the current design.
+        assertThatNoException().isThrownBy(() -> audioManager.play("/audio/test.wav"));
+    }
+
+    @Test
+    void play_afterShutdown_skipsWithoutError() {
+        audioManager.shutdown();
+        // After shutdown, play() should not throw even though executor is terminated.
+        // The RejectedExecutionException is swallowed by the catch block in play().
         assertThatNoException().isThrownBy(() -> audioManager.play("/audio/test.wav"));
     }
 }

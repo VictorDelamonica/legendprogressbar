@@ -32,16 +32,19 @@ public class AudioManager {
             }
 
             try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(is))) {
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioInputStream);
-                clip.start();
+                try (Clip clip = AudioSystem.getClip()) {
+                    clip.open(audioInputStream);
+                    clip.start();
 
-                // Block until the clip finishes playing
-                while (clip.isRunning()) {
-                    Thread.sleep(10);
+                    // Block until the clip finishes playing
+                    while (clip.isRunning()) {
+                        Thread.sleep(10);
+                    }
                 }
-                clip.close();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
         } catch (Exception e) {
             // Silently skip on any error (missing resource, unsupported format, etc.)
         }

@@ -1,6 +1,7 @@
 import javax.swing.Icon;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Animation displayed when a build succeeds.
@@ -9,6 +10,9 @@ import java.util.List;
  * If winning pose frames are not available, falls back to the character's normal frame.
  */
 public class SuccessAnimation implements Animation {
+
+    private static final int ANIMATION_DURATION_MS = 1500; // Build feedback animations play for 1.5 seconds
+    private static final String AUDIO_RESOURCE = "/audio/success.wav";
 
     private final Icon[] frames;
 
@@ -28,6 +32,9 @@ public class SuccessAnimation implements Animation {
      * @return Array of Icon frames in order
      */
     private Icon[] loadFrames(LegendCharacter character) {
+        Objects.requireNonNull(character, "character must not be null");
+        // Character enum name must match resource filename convention (lowercase)
+        // e.g., LINK enum → "link_win_0.png", etc.
         String characterName = character.name().toLowerCase();
         List<Icon> loadedFrames = new ArrayList<>();
 
@@ -54,8 +61,8 @@ public class SuccessAnimation implements Animation {
             return new Icon[]{normalFrame};
         }
 
-        // Last resort: return empty array (should not happen in normal operation)
-        return new Icon[]{};
+        // Contract violation: getFrames() must never return empty array
+        throw new IllegalStateException("No frames available for character: " + character);
     }
 
     @Override
@@ -65,11 +72,11 @@ public class SuccessAnimation implements Animation {
 
     @Override
     public int getDurationMs() {
-        return 1500;
+        return ANIMATION_DURATION_MS;
     }
 
     @Override
     public String getAudioResourcePath() {
-        return "/audio/success.wav";
+        return AUDIO_RESOURCE;
     }
 }

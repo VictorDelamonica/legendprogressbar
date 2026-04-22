@@ -18,6 +18,7 @@ public class CancelledAnimation implements Animation {
      * Create a cancelled animation for the given character.
      *
      * @param character the character to animate (must not be null)
+     * @throws NullPointerException if character is null
      * @throws IllegalStateException if no frames are available for the character
      */
     public CancelledAnimation(LegendCharacter character) {

@@ -63,4 +63,7 @@
 
   </applicationListeners>
 
+  <!-- Build completion listener to queue animations based on build outcome -->
+  <compileStatusNotification implementation="BuildStateListener" />
+
 </idea-plugin>

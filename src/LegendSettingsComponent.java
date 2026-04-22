@@ -1,4 +1,5 @@
 import com.intellij.util.ui.JBUI;
+import com.intellij.openapi.diagnostic.Logger;
 
 import javax.swing.*;
 import javax.swing.ImageIcon;
@@ -9,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class LegendSettingsComponent {
+    private static final Logger LOG = Logger.getInstance(LegendSettingsComponent.class);
+    private static final String SUCCESS_AUDIO_PATH = "/audio/success.wav";
+
     private final JPanel panel;
 
     // --- Character selector ---
@@ -22,6 +26,7 @@ public final class LegendSettingsComponent {
     // --- Audio settings ---
     private final JCheckBox audioMuteCheckbox = new JCheckBox("Mute build feedback audio");
     private final JButton previewButton = new JButton("Preview animation");
+    private AudioManager audioManager;
 
     public LegendSettingsComponent() {
         // ── Section 1: Character grid ───────────────────────────────────────
@@ -43,6 +48,9 @@ public final class LegendSettingsComponent {
 
         LegendCharacter selectedChar = LegendSettingsState.getInstance().getSelectedCharacter();
         setSelectedCharacter(selectedChar != null ? selectedChar : LegendCharacter.LINK);
+
+        // Initialize audio manager once
+        audioManager = new AudioManager();
 
         // ── Section 2: Items grid ───────────────────────────────────────────
         JPanel itemsGrid = buildItemsPanel();
@@ -135,8 +143,7 @@ public final class LegendSettingsComponent {
 
         // Play success audio if not muted
         if (!audioMuteCheckbox.isSelected()) {
-            AudioManager audioManager = new AudioManager();
-            audioManager.play("/audio/success.wav");
+            audioManager.play(SUCCESS_AUDIO_PATH);
         }
     }
 
@@ -287,7 +294,10 @@ public final class LegendSettingsComponent {
                     }
                 }
             }
-        } catch (Throwable t) { /* silently return whatever was collected */ }
+        } catch (Throwable t) {
+            LOG.warn("Failed to read character icons from resources", t);
+            // silently return whatever was collected
+        }
         return results;
     }
 
@@ -335,5 +345,11 @@ public final class LegendSettingsComponent {
 
     public void setAudioMuted(boolean muted) {
         audioMuteCheckbox.setSelected(muted);
+    }
+
+    public void disposeUIResources() {
+        if (audioManager != null) {
+            audioManager.shutdown();
+        }
     }
 }

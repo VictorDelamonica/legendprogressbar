@@ -50,6 +50,16 @@ public final class LegendSettingsState implements PersistentStateComponent<Legen
         this.selectedItemPath = path;
     }
 
+    // ── Audio ─────────────────────────────────────────────────────────────
+
+    public boolean isAudioMuted() {
+        return audioMuted;
+    }
+
+    public void setAudioMuted(boolean muted) {
+        this.audioMuted = muted;
+    }
+
     // ── PersistentStateComponent ──────────────────────────────────────────
 
     @NotNull

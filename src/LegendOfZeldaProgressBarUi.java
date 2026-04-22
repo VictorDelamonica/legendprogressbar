@@ -31,6 +31,9 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
     private volatile int velocity = 1;
     private volatile int animTick = 0;   // counts paint calls; drives frame index
 
+    // Animation renderer for overlay animations
+    private AnimationRenderer animationRenderer;
+
     @SuppressWarnings({"MethodOverridesStaticMethodOfSuperclass", "UnusedDeclaration"})
     public static ComponentUI createUI(JComponent c) {
         c.setBorder(JBUI.Borders.empty().asUIResource());
@@ -199,6 +202,10 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
         if (progressBar.isStringPainted()) {
             paintProgressString(g, b.left, b.top, barRectWidth, barRectHeight);
         }
+
+        // Paint animation overlay if active
+        paintAnimationOverlay(g, c);
+
         config.restore();
     }
 
@@ -212,6 +219,31 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
         int ty = y + (h + fm.getAscent() - fm.getDescent()) / 2;
         g.setColor(progressBar.getForeground());
         g.drawString(text, tx, ty);
+    }
+
+    /**
+     * Paint animation overlay on top of the progress bar.
+     *
+     * Lazily initializes the animation renderer on first paint.
+     * Updates the animation frame and renders it centered on the progress bar.
+     */
+    private void paintAnimationOverlay(Graphics2D g, JComponent c) {
+        if (animationRenderer == null) {
+            animationRenderer = new AnimationRenderer(
+                    AnimationQueueHolder.getInstance().getQueue());
+        }
+
+        // Update animation frame (assuming ~60fps with 16ms per frame)
+        animationRenderer.updateFrame(16);
+
+        // Paint animation overlay
+        Insets b = progressBar.getInsets();
+        int trackX = JBUI.scale(2);
+        int trackY = Math.max(0, (c.getHeight() - progressBar.getPreferredSize().height) / 2 + JBUI.scale(2));
+        int trackW = Math.max(1, c.getWidth() - JBUI.scale(5));
+        int trackH = Math.max(1, progressBar.getPreferredSize().height - JBUI.scale(5));
+
+        animationRenderer.paint(g, trackX, trackY, trackW, trackH);
     }
 
     // ── Paint determinate ──────────────────────────────────────────────────
@@ -284,6 +316,9 @@ public class LegendOfZeldaProgressBarUi extends BasicProgressBarUI {
                     renderLocation.x, renderLocation.y);
             g2.setClip(oldClip);
         }
+
+        // Paint animation overlay if active
+        paintAnimationOverlay(g2, c);
     }
 
     @Override

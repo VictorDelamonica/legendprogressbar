@@ -19,12 +19,10 @@ public class BuildStateListener implements CompileStatusNotification {
 
     /**
      * Create a BuildStateListener with the default AnimationQueue.
-     * Used for production. The queue is obtained on-demand from AnimationQueueHolder (Task 8).
+     * Used for production. The queue is obtained from the global AnimationQueueHolder singleton.
      */
     public BuildStateListener() {
-        // TODO: Task 8 will replace this with AnimationQueueHolder.getInstance()
-        // For now, create a temporary queue that won't be observed by the UI
-        this(new AnimationQueue());
+        this(AnimationQueueHolder.getInstance().getQueue());
     }
 
     /**
